@@ -32,6 +32,7 @@ namespace OSLab09 {
 
         if (board == NULL) {
             MessageBox::Show("Could not map view of file: " + GetLastError());
+        }
 
         HANDLE hMutex = CreateMutex(NULL, FALSE, L"IdeasMutex");
         if (hMutex == NULL) {
@@ -92,22 +93,6 @@ namespace OSLab09 {
         //Для перевірки пам'яті (можна викинути)
         std::string content(board);  
         MessageBox::Show(gcnew System::String(content.c_str())); 
-        
-        UnmapViewOfFile(board);
-        CloseHandle(hMapFile);
-    }
-
-    void MyForm::CountdownTimer_Tick(Object^ sender, EventArgs^ e) {
-            
-        if (remainingTime > 0) {
-                remainingTime--;
-                timeLabel->Text = FormatTime(remainingTime);
-        } else {
-                countdownTimer->Stop();
-                timeLabel->Text = "00:00";
-                MessageBox::Show("Time out!", "Timer");
-        }
-    }
 
         WaitForMultipleObjects(processNumber, process_handles_arr.data(), TRUE, INFINITE);
 
@@ -129,6 +114,22 @@ namespace OSLab09 {
             // Close process handle
             CloseHandle(process_handles_arr[i]);
         }
+        
+        UnmapViewOfFile(board);
+        CloseHandle(hMapFile);
+    }
+
+    void MyForm::CountdownTimer_Tick(Object^ sender, EventArgs^ e) {
+            
+        if (remainingTime > 0) {
+                remainingTime--;
+                timeLabel->Text = FormatTime(remainingTime);
+        } else {
+                countdownTimer->Stop();
+                timeLabel->Text = "00:00";
+                MessageBox::Show("Time out!", "Timer");
+        }
+    }
       
     String^ MyForm::FormatTime(int seconds) {
 
