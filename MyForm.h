@@ -31,9 +31,10 @@ namespace OSLab09 {
 		MyForm(void)
 		{
 			InitializeComponent();
-			//
-			//TODO: Add the constructor code here
-			//
+			
+			 countdownTimer->Interval = 1000;
+			 countdownTimer->Tick += gcnew EventHandler(this, &MyForm::CountdownTimer_Tick);
+
 		}
 
 	protected:
@@ -82,6 +83,9 @@ namespace OSLab09 {
 
 
 	private: System::Windows::Forms::Label^ label3;
+	private: System::Windows::Forms::Timer^ countdownTimer;
+	private: System::Windows::Forms::Label^ timeLabel;
+
 
 
 
@@ -107,6 +111,7 @@ namespace OSLab09 {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			this->LaunchProcessesButton = (gcnew System::Windows::Forms::Button());
 			this->setAffinityToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripTextBox1 = (gcnew System::Windows::Forms::ToolStripTextBox());
@@ -114,6 +119,8 @@ namespace OSLab09 {
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->processNumberTextBox = (gcnew System::Windows::Forms::TextBox());
 			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->countdownTimer = (gcnew System::Windows::Forms::Timer(this->components));
+			this->timeLabel = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
 			// 
 			// LaunchProcessesButton
@@ -150,14 +157,16 @@ namespace OSLab09 {
 			// textBox1
 			// 
 			this->textBox1->Location = System::Drawing::Point(73, 46);
+			this->textBox1->Margin = System::Windows::Forms::Padding(3, 2, 3, 2);
 			this->textBox1->Multiline = true;
 			this->textBox1->Name = L"textBox1";
-			this->textBox1->Size = System::Drawing::Size(558, 160);
+			this->textBox1->Size = System::Drawing::Size(559, 160);
 			this->textBox1->TabIndex = 3;
 			// 
 			// processNumberTextBox
 			// 
-			this->processNumberTextBox->Location = System::Drawing::Point(215, 241);
+			this->processNumberTextBox->Location = System::Drawing::Point(221, 241);
+			this->processNumberTextBox->Margin = System::Windows::Forms::Padding(3, 2, 3, 2);
 			this->processNumberTextBox->Name = L"processNumberTextBox";
 			this->processNumberTextBox->Size = System::Drawing::Size(141, 22);
 			this->processNumberTextBox->TabIndex = 4;
@@ -165,17 +174,27 @@ namespace OSLab09 {
 			// label3
 			// 
 			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(70, 241);
+			this->label3->Location = System::Drawing::Point(69, 241);
 			this->label3->Name = L"label3";
 			this->label3->Size = System::Drawing::Size(139, 16);
 			this->label3->TabIndex = 6;
 			this->label3->Text = L"Number of processes:";
 			// 
+			// timeLabel
+			// 
+			this->timeLabel->AutoSize = true;
+			this->timeLabel->Location = System::Drawing::Point(698, 96);
+			this->timeLabel->Name = L"timeLabel";
+			this->timeLabel->Size = System::Drawing::Size(14, 16);
+			this->timeLabel->TabIndex = 7;
+			this->timeLabel->Text = L"0";
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(922, 415);
+			this->ClientSize = System::Drawing::Size(923, 415);
+			this->Controls->Add(this->timeLabel);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->processNumberTextBox);
 			this->Controls->Add(this->textBox1);
@@ -196,6 +215,8 @@ namespace OSLab09 {
 	}
 	
 	private: int processNumber = 0;
+	private: int remainingTime;
+
 
 private:
 	void MapLinesToSharedMemory();
@@ -203,6 +224,10 @@ private:
 	HANDLE launchChildProcess();
 	
 	System::Void LaunchProcessesButton_Click(System::Object^ sender, System::EventArgs^ e);
+
+	void CountdownTimer_Tick(Object^ sender, EventArgs^ e);
+
+	String^ FormatTime(int seconds);
 	
 	System::Void WaitForChildProcesses();
 

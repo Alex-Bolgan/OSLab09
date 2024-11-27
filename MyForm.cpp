@@ -32,6 +32,11 @@ namespace OSLab09 {
 
         if (board == NULL) {
             MessageBox::Show("Could not map view of file: " + GetLastError());
+
+        HANDLE hMutex = CreateMutex(NULL, FALSE, L"IdeasMutex");
+        if (hMutex == NULL) {
+            MessageBox::Show("Could not create mutex object: " + GetLastError());
+            UnmapViewOfFile(board);
             CloseHandle(hMapFile);
             return;
         }
@@ -78,13 +83,31 @@ namespace OSLab09 {
             process_handles_arr[i] = launchChildProcess();
         }
 
+        remainingTime = 30;
+        timeLabel->Text = FormatTime(remainingTime);
+        countdownTimer->Start();
 
         WaitForChildProcesses();
+        
+        //Для перевірки пам'яті (можна викинути)
+        std::string content(board);  
+        MessageBox::Show(gcnew System::String(content.c_str())); 
+        
         UnmapViewOfFile(board);
         CloseHandle(hMapFile);
     }
 
-    inline System::Void MyForm::WaitForChildProcesses() {
+    void MyForm::CountdownTimer_Tick(Object^ sender, EventArgs^ e) {
+            
+        if (remainingTime > 0) {
+                remainingTime--;
+                timeLabel->Text = FormatTime(remainingTime);
+        } else {
+                countdownTimer->Stop();
+                timeLabel->Text = "00:00";
+                MessageBox::Show("Time out!", "Timer");
+        }
+    }
 
         WaitForMultipleObjects(processNumber, process_handles_arr.data(), TRUE, INFINITE);
 
@@ -106,6 +129,17 @@ namespace OSLab09 {
             // Close process handle
             CloseHandle(process_handles_arr[i]);
         }
+      
+    String^ MyForm::FormatTime(int seconds) {
+
+            int minutes = seconds / 60;
+            int secs = seconds % 60;
+
+            return String::Format("{0:D2}:{1:D2}", minutes, secs);
     }
 
+
+    inline System::Void MyForm::WaitForChildProcesses() {
+        WaitForMultipleObjects(processNumber, process_handles_arr.data(), TRUE, INFINITE);
+    }
 }
