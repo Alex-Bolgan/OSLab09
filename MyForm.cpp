@@ -35,17 +35,15 @@ namespace OSLab09{
             CloseHandle(hMapFile);
             return;
         }
-    }
 
-
-    HANDLE hMutex = CreateMutex(NULL, FALSE, L"IdeasMutex");
-    if (hMutex == NULL) {
-        MessageBox::Show("Could not create mutex object: " + GetLastError());
-        UnmapViewOfFile(board);
-        CloseHandle(hMapFile);
-        return;
+        HANDLE hMutex = CreateMutex(NULL, FALSE, L"IdeasMutex");
+        if (hMutex == NULL) {
+            MessageBox::Show("Could not create mutex object: " + GetLastError());
+            UnmapViewOfFile(board);
+            CloseHandle(hMapFile);
+            return;
+        }
     }
-}
 
     HANDLE MyForm::launchChildProcess() {
         STARTUPINFOA si;
