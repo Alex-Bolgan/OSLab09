@@ -37,6 +37,16 @@ namespace OSLab09{
         }
     }
 
+
+    HANDLE hMutex = CreateMutex(NULL, FALSE, L"IdeasMutex");
+    if (hMutex == NULL) {
+        MessageBox::Show("Could not create mutex object: " + GetLastError());
+        UnmapViewOfFile(board);
+        CloseHandle(hMapFile);
+        return;
+    }
+}
+
     HANDLE MyForm::launchChildProcess() {
         STARTUPINFOA si;
         PROCESS_INFORMATION pi;
@@ -83,8 +93,14 @@ namespace OSLab09{
         countdownTimer->Start();
 
         WaitForChildProcesses();
+        
+        //Для перевірки пам'яті (можна викинути)
+        std::string content(board);  
+        MessageBox::Show(gcnew System::String(content.c_str())); 
+        
         UnmapViewOfFile(board);
         CloseHandle(hMapFile);
+        
     } 
 
     void MyForm::CountdownTimer_Tick(Object^ sender, EventArgs^ e) {
@@ -107,9 +123,8 @@ namespace OSLab09{
             return String::Format("{0:D2}:{1:D2}", minutes, secs);
     }
 
-    inline System::Void MyForm::WaitForChildProcesses() {
 
+    inline System::Void MyForm::WaitForChildProcesses() {
         WaitForMultipleObjects(processNumber, process_handles_arr.data(), TRUE, INFINITE);
     }
-
 }
