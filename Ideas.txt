@@ -1,0 +1,30 @@
+Development of a chatbot with Ukrainian language support based on AI.
+Analysis of the energy efficiency of different encryption algorithms.
+Creation of an augmented reality game for studying Ukrainian history.
+Emotion recognition system based on image analysis.
+Integration of a real-time language translator for video conferences.
+Development of a mobile app for monitoring environmental conditions.
+Development of a rainwater collection system for home use.
+Analysis of the impact of plastic on the biodiversity of Ukrainian rivers.
+Research on the efficiency of biofuel from local agricultural waste.
+Development of a household air purification system with minimal energy consumption.
+Comparison of the efficiency of different types of solar panels in the region.
+Research on the effect of electromagnetic radiation on plant growth.
+Analysis of the correlation between eating habits and stress levels among teenagers.
+Creation of a heart rate monitoring system using IoT.
+Study of the impact of urban noise on people's cognitive abilities.
+Development of biomaterials for regenerating damaged tissues.
+Study of ice formation mechanisms on various surfaces.
+Development of an affordable device for wind energy collection in urban areas.
+Modeling tsunami wave propagation in the Black Sea.
+Research on the efficiency of heat pumps in different climatic conditions of Ukraine.
+Analysis of the efficiency of machine learning methods for predicting grain prices.
+Study of the impact of social media on election results using data analysis.
+Development of a model for predicting infection spread in urban areas.
+Development of environmentally safe water purification methods.
+Synthesis of new biodegradable polymers for packaging.
+Research on the properties of nanomaterials for use in batteries.
+Analysis of the effectiveness of online education among schoolchildren during the pandemic.
+Study of the influence of color on teenagers’ productivity.
+Research on changes in language influenced by technology (smartphones, memes).
+Analysis of the development of cyber ethics in modern society.

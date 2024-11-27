@@ -7,6 +7,8 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include <msclr/marshal_cppstd.h>
+
 
 const size_t FILE_SIZE = 1024 * 1024;
 
@@ -43,11 +45,10 @@ HANDLE MyForm::launchChildProcess() {
     ZeroMemory(&pi, sizeof(pi));
 
     std::ostringstream oss;
-    
-    // oss << startRow << " " << endRow << " " << N;
-    // аргументи
 
-    std::string filePath = "ChildProcess6\\x64\\Debug\\ChildProcess3.exe";
+    oss << processNumber;
+
+    std::string filePath = "x64\\Debug\\ChildProcess3.exe";
 
     std::string command = filePath + " " + oss.str();  
     LPSTR cmdLine = const_cast<char*>(command.c_str());

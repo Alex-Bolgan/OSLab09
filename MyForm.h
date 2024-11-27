@@ -118,10 +118,10 @@ namespace OSLab09 {
 			// 
 			// LaunchProcessesButton
 			// 
-			this->LaunchProcessesButton->Location = System::Drawing::Point(115, 299);
-			this->LaunchProcessesButton->Margin = System::Windows::Forms::Padding(3, 2, 3, 2);
+			this->LaunchProcessesButton->Location = System::Drawing::Point(86, 243);
+			this->LaunchProcessesButton->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
 			this->LaunchProcessesButton->Name = L"LaunchProcessesButton";
-			this->LaunchProcessesButton->Size = System::Drawing::Size(151, 36);
+			this->LaunchProcessesButton->Size = System::Drawing::Size(113, 29);
 			this->LaunchProcessesButton->TabIndex = 1;
 			this->LaunchProcessesButton->Text = L"Launch processes";
 			this->LaunchProcessesButton->UseVisualStyleBackColor = true;
@@ -142,46 +142,50 @@ namespace OSLab09 {
 			// label1
 			// 
 			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(-3, 366);
+			this->label1->Location = System::Drawing::Point(-2, 297);
+			this->label1->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
 			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(0, 16);
+			this->label1->Size = System::Drawing::Size(0, 13);
 			this->label1->TabIndex = 2;
 			// 
 			// textBox1
 			// 
-			this->textBox1->Location = System::Drawing::Point(73, 46);
+			this->textBox1->Location = System::Drawing::Point(55, 37);
+			this->textBox1->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
 			this->textBox1->Multiline = true;
 			this->textBox1->Name = L"textBox1";
-			this->textBox1->Size = System::Drawing::Size(558, 160);
+			this->textBox1->Size = System::Drawing::Size(420, 131);
 			this->textBox1->TabIndex = 3;
 			// 
 			// processNumberTextBox
 			// 
-			this->processNumberTextBox->Location = System::Drawing::Point(215, 241);
+			this->processNumberTextBox->Location = System::Drawing::Point(166, 196);
+			this->processNumberTextBox->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
 			this->processNumberTextBox->Name = L"processNumberTextBox";
-			this->processNumberTextBox->Size = System::Drawing::Size(141, 22);
+			this->processNumberTextBox->Size = System::Drawing::Size(107, 20);
 			this->processNumberTextBox->TabIndex = 4;
 			// 
 			// label3
 			// 
 			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(70, 241);
+			this->label3->Location = System::Drawing::Point(52, 196);
+			this->label3->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
 			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(139, 16);
+			this->label3->Size = System::Drawing::Size(110, 13);
 			this->label3->TabIndex = 6;
 			this->label3->Text = L"Number of processes:";
 			// 
 			// MyForm
 			// 
-			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
+			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(922, 415);
+			this->ClientSize = System::Drawing::Size(692, 337);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->processNumberTextBox);
 			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->LaunchProcessesButton);
-			this->Margin = System::Windows::Forms::Padding(3, 2, 3, 2);
+			this->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
 			this->Name = L"MyForm";
 			this->Text = L"MyForm";
 			this->Load += gcnew System::EventHandler(this, &MyForm::MyForm_Load);
