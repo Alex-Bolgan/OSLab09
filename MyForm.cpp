@@ -35,6 +35,14 @@ void MyForm::MapLinesToSharedMemory() {
         CloseHandle(hMapFile);
         return;
     }
+
+    HANDLE hMutex = CreateMutex(NULL, FALSE, L"IdeasMutex");
+    if (hMutex == NULL) {
+        MessageBox::Show("Could not create mutex object: " + GetLastError());
+        UnmapViewOfFile(board);
+        CloseHandle(hMapFile);
+        return;
+    }
 }
 
 HANDLE MyForm::launchChildProcess() {
@@ -78,15 +86,16 @@ HANDLE MyForm::launchChildProcess() {
              process_handles_arr[i] = launchChildProcess();
         }
 
-
         WaitForChildProcesses();
+        //Для перевірки пам'яті (можна викинути)
+        std::string content(board);  
+        MessageBox::Show(gcnew System::String(content.c_str())); 
+        
         UnmapViewOfFile(board);
         CloseHandle(hMapFile);
+        
     } 
-
     inline System::Void MyForm::WaitForChildProcesses() {
-
         WaitForMultipleObjects(processNumber, process_handles_arr.data(), TRUE, INFINITE);
     }
-
 }

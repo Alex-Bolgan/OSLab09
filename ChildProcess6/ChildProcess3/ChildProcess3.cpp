@@ -10,7 +10,6 @@
 const size_t FILE_SIZE = 1024 * 1024;
 char* board;  
 
-
 std::vector<std::string> readIdeasFromFile(const std::string& fileName) {
     std::vector<std::string> ideas;
     std::ifstream inFile(fileName);
@@ -63,36 +62,55 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> ideas = readIdeasFromFile(fileName);
 
     HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, L"IdeasSharedMemory");
-  
-    std::vector<std::string> randomIdeas = selectRandomIdeas(ideas, 2);
-
-    for (const auto& idea : randomIdeas) {
-        std::cout << idea << std::endl;
-    }
-
-    int a;
-    std::cin >> a;
-
     if (hMapFile == NULL) {
         std::cerr << "Could not open file mapping object: " << GetLastError() << std::endl;
             std::cin.get();
         return 2;
     }
 
-    board = (char*)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, FILE_SIZE);
-    
-    if (board == NULL) {
-        std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
-            std::cin.get();
-
+    HANDLE hMutex = OpenMutex(SYNCHRONIZE, FALSE, L"IdeasMutex");
+    if (hMutex == NULL) {
+        std::cerr << "Could not open mutex object: " << GetLastError() << std::endl;
         CloseHandle(hMapFile);
+        std::cin.get();
         return 3;
     }
 
-    //TODO: write ideas  to map
-    
+    board = (char*)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, FILE_SIZE);
+    if (board == NULL) {
+        std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
+        std::cin.get();
+        CloseHandle(hMapFile);
+        return 5;
+    }
+
+    std::vector<std::string> randomIdeas = selectRandomIdeas(ideas, 2);
+
+    std::ostringstream oss;
+    for (const auto& idea : randomIdeas) {
+        oss << idea << "\n";
+    }
+    std::string ideasToWrite = oss.str();
+
+    WaitForSingleObject(hMutex, INFINITE);
+
+    size_t currentSize = strlen(board);
+
+    if (currentSize + ideasToWrite.size() + 1 > FILE_SIZE) {
+        std::cerr << "Not enough space to write data." << std::endl;
+        ReleaseMutex(hMutex);
+        CloseHandle(hMapFile);
+        CloseHandle(hMutex);
+        return 5;
+    }
+
+    memcpy(board + currentSize, ideasToWrite.c_str(), ideasToWrite.size() + 1);
+    ReleaseMutex(hMutex);
     //TODO: voting for best ideas
 
     UnmapViewOfFile(board);
     CloseHandle(hMapFile);
+    CloseHandle(hMutex);
+
+    return 0;
 }
