@@ -17,7 +17,7 @@ extern HANDLE hMapFile;
 char* board;
 HANDLE hResultFile;
 
-namespace OSLab09{
+namespace OSLab09 {
 
     void MyForm::MapLinesToSharedMemory() {
 
@@ -29,12 +29,9 @@ namespace OSLab09{
         }
 
         board = (char*)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, FILE_SIZE);
-    
+
         if (board == NULL) {
-            MessageBox::Show("Could not map view of file: "+ GetLastError());
-            CloseHandle(hMapFile);
-            return;
-        }
+            MessageBox::Show("Could not map view of file: " + GetLastError());
 
         HANDLE hMutex = CreateMutex(NULL, FALSE, L"IdeasMutex");
         if (hMutex == NULL) {
@@ -58,7 +55,7 @@ namespace OSLab09{
 
         std::string filePath = "x64\\Debug\\ChildProcess3.exe";
 
-        std::string command = filePath + " " + oss.str();  
+        std::string command = filePath + " " + oss.str();
         LPSTR cmdLine = const_cast<char*>(command.c_str());
 
         if (!CreateProcessA(NULL, cmdLine, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
@@ -75,7 +72,7 @@ namespace OSLab09{
         processNumber = Convert::ToInt32(processNumberTextBox->Text);
 
         if (processNumber < 1 || processNumber > 8) {
-           MessageBox::Show("Process number must be between 1 and 8");
+            MessageBox::Show("Process number must be between 1 and 8");
             return;
         }
 
@@ -83,7 +80,7 @@ namespace OSLab09{
 
         for (int i = 0; i < processNumber; i++)
         {
-             process_handles_arr[i] = launchChildProcess();
+            process_handles_arr[i] = launchChildProcess();
         }
 
         remainingTime = 30;
@@ -98,8 +95,7 @@ namespace OSLab09{
         
         UnmapViewOfFile(board);
         CloseHandle(hMapFile);
-        
-    } 
+    }
 
     void MyForm::CountdownTimer_Tick(Object^ sender, EventArgs^ e) {
             
@@ -113,6 +109,27 @@ namespace OSLab09{
         }
     }
 
+        WaitForMultipleObjects(processNumber, process_handles_arr.data(), TRUE, INFINITE);
+
+        // Retrieve and display the exit code for each process
+        for (int i = 0; i < processNumber; i++) {
+            DWORD exitCode;
+            if (GetExitCodeProcess(process_handles_arr[i], &exitCode)) {
+                // Display the exit code in some form (e.g., MessageBox, log, etc.)
+                System::String^ message = "Child process " + i + " exited with code: " + exitCode;
+                MessageBox::Show(message);
+            }
+            else {
+                // Handle error in retrieving exit code
+                System::String^ error = "Failed to get exit code for process " + i +
+                    ". Error: " + GetLastError();
+                MessageBox::Show(error);
+            }
+
+            // Close process handle
+            CloseHandle(process_handles_arr[i]);
+        }
+      
     String^ MyForm::FormatTime(int seconds) {
 
             int minutes = seconds / 60;
