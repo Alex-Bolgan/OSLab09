@@ -234,6 +234,7 @@ private:
 	void FindTopThreeIdeas();
 	void BoardHeader(std::vector<std::pair<std::string, int>> sortIdeas);
 
+	void WriteToFile(const std::string& data);
 };
 }
 
