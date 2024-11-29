@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
         std::cin.get();
     }
 
-    std::vector<std::string> randomIdeas = selectRandomIdeas(ideas, 2);
+    std::vector<std::string> randomIdeas = selectRandomIdeas(ideas, 1);
 
     std::ostringstream oss;
     for (const auto& idea : randomIdeas) {

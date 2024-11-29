@@ -12,7 +12,7 @@ Comparison of the efficiency of different types of solar panels in the region.
 Research on the effect of electromagnetic radiation on plant growth.
 Analysis of the correlation between eating habits and stress levels among teenagers.
 Creation of a heart rate monitoring system using IoT.
-Study of the impact of urban noise on people's cognitive abilities.
+Study of the impact of urban noise on peoples cognitive abilities.
 Development of biomaterials for regenerating damaged tissues.
 Study of ice formation mechanisms on various surfaces.
 Development of an affordable device for wind energy collection in urban areas.
@@ -25,6 +25,6 @@ Development of environmentally safe water purification methods.
 Synthesis of new biodegradable polymers for packaging.
 Research on the properties of nanomaterials for use in batteries.
 Analysis of the effectiveness of online education among schoolchildren during the pandemic.
-Study of the influence of color on teenagers’ productivity.
+Study of the influence of color on teenagers productivity.
 Research on changes in language influenced by technology (smartphones, memes).
 Analysis of the development of cyber ethics in modern society.
