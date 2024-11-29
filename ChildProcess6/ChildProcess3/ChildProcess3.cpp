@@ -6,7 +6,7 @@
 #include <string>
 #include <random>
 #include <algorithm>
-#define NUMBER_OF_IDEAS 2
+#define NUMBER_OF_IDEAS 1
 
 const size_t FILE_SIZE = 1024 * 1024;
 char* board;
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
         std::cin.get();
     }
 
-    std::vector<std::string> randomIdeas = selectRandomIdeas(ideas, 1);
+    std::vector<std::string> randomIdeas = selectRandomIdeas(ideas, NUMBER_OF_IDEAS);
 
     std::ostringstream oss;
     for (const auto& idea : randomIdeas) {
