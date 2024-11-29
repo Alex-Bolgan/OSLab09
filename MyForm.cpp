@@ -164,6 +164,30 @@ namespace OSLab09 {
         }
     }
 
+    void MyForm::WriteToFile(const std::string& data)
+    {
+        // Вказуємо шлях до файлу
+        const char* filePath = "output.txt";
+
+        // Відкриття файлу з правами на запис
+        HANDLE hFile = CreateFileA(filePath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+        if (hFile == INVALID_HANDLE_VALUE) {
+            std::cerr << "Failed to create or open file. Error: " << GetLastError() << std::endl;
+            return;
+        }
+
+        DWORD written;
+        BOOL writeResult = WriteFile(hFile, data.c_str(), data.size(), &written, NULL);
+
+        if (!writeResult) {
+            std::cerr << "Failed to write to file. Error: " << GetLastError() << std::endl;
+        }
+
+        // Закриваємо файл
+        CloseHandle(hFile);
+    }
+
     void MyForm::FindTopThreeIdeas()
     {
         //Search and show top 3 most popular ideas 
@@ -198,6 +222,7 @@ namespace OSLab09 {
             oss << "Rank " << i + 1 << ": " << sortedIdeas[i].first << "\n";
         }
 
+        WriteToFile(oss.str());
     }
 
 }
