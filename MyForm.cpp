@@ -96,8 +96,6 @@ namespace OSLab09 {
         std::string content(board);  
         MessageBox::Show(gcnew System::String(content.c_str())); 
 
-        FindTopThreeIdeas();
-
         WaitForMultipleObjects(processNumber, process_handles_arr.data(), TRUE, INFINITE);
 
         // Retrieve and display the exit code for each process
@@ -131,6 +129,7 @@ namespace OSLab09 {
         } else {
                 countdownTimer->Stop();
                 timeLabel->Text = "00:00";
+                FindTopThreeIdeas();
                 MessageBox::Show("Time out!", "Timer");
         }
     }
@@ -148,9 +147,9 @@ namespace OSLab09 {
         WaitForMultipleObjects(processNumber, process_handles_arr.data(), TRUE, INFINITE);
     }
 
-    // Функція порівняння для сортування за кількістю
+    // Compare function
     bool CompareByCount(const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
-        return a.second > b.second;  // Сортуємо за значенням (кількістю) від найбільшого до найменшого
+        return a.second > b.second;  // sort in descending order
     }
 
     void MyForm::BoardHeader(std::vector<std::pair<std::string, int>> sortIdeas)
@@ -166,10 +165,8 @@ namespace OSLab09 {
 
     void MyForm::WriteToFile(const std::string& data)
     {
-        // Вказуємо шлях до файлу
         const char* filePath = "output.txt";
 
-        // Відкриття файлу з правами на запис
         HANDLE hFile = CreateFileA(filePath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
         if (hFile == INVALID_HANDLE_VALUE) {
@@ -184,7 +181,6 @@ namespace OSLab09 {
             std::cerr << "Failed to write to file. Error: " << GetLastError() << std::endl;
         }
 
-        // Закриваємо файл
         CloseHandle(hFile);
     }
 
@@ -208,14 +204,13 @@ namespace OSLab09 {
             ideaCount[i]++;
         }
 
-        // Перетворити map в вектор пар для сортування
+        // Convert map into a vector of pairs for sorting
         std::vector<std::pair<std::string, int>> sortedIdeas(ideaCount.begin(), ideaCount.end());
 
-        // Сортуємо за допомогою звичайної функції порівняння
         std::sort(sortedIdeas.begin(), sortedIdeas.end(), CompareByCount);
 
         BoardHeader(sortedIdeas);
-        // Вивести три найпопулярніші ідеї
+
         std::ostringstream oss;
         for (int i = 0; i < 3 && i < sortedIdeas.size(); ++i) {
             textBox1->Text += "Rank " + (i + 1) + ": " + gcnew System::String(sortedIdeas[i].first.c_str()) + Environment::NewLine;
