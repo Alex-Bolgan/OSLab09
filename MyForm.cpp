@@ -116,9 +116,7 @@ namespace OSLab09 {
             // Close process handle
             CloseHandle(process_handles_arr[i]);
         }
-        
-        UnmapViewOfFile(board);
-        CloseHandle(hMapFile);
+
     }
 
     void MyForm::CountdownTimer_Tick(Object^ sender, EventArgs^ e) {
@@ -131,6 +129,9 @@ namespace OSLab09 {
                 timeLabel->Text = "00:00";
                 FindTopThreeIdeas();
                 MessageBox::Show("Time out!", "Timer");
+                        
+                UnmapViewOfFile(board);
+                CloseHandle(hMapFile);
         }
     }
       
