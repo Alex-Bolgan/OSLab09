@@ -126,7 +126,7 @@ int main(int argc, char* argv[]) {
     memcpy(board + currentSize, ideasToWrite.c_str(), ideasToWrite.size() + 1);
     ReleaseMutex(hMutex);
 
-    std::cin.get();
+    //std::cin.get();
     UnmapViewOfFile(board);
     CloseHandle(hMapFile);
 
