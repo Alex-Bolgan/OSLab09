@@ -231,6 +231,9 @@ private:
 	
 	System::Void WaitForChildProcesses();
 
+	void FindTopThreeIdeas();
+	void BoardHeader(std::vector<std::pair<std::string, int>> sortIdeas);
+
 };
 }
 

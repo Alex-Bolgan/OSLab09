@@ -8,6 +8,8 @@
 #include <fstream>
 #include <iomanip>
 #include <msclr/marshal_cppstd.h>
+#include <map>
+#include <algorithm>
 
 
 const size_t FILE_SIZE = 1024 * 1024;
@@ -94,6 +96,8 @@ namespace OSLab09 {
         std::string content(board);  
         MessageBox::Show(gcnew System::String(content.c_str())); 
 
+        FindTopThreeIdeas();
+
         WaitForMultipleObjects(processNumber, process_handles_arr.data(), TRUE, INFINITE);
 
         // Retrieve and display the exit code for each process
@@ -143,4 +147,57 @@ namespace OSLab09 {
     inline System::Void MyForm::WaitForChildProcesses() {
         WaitForMultipleObjects(processNumber, process_handles_arr.data(), TRUE, INFINITE);
     }
+
+    // Функція порівняння для сортування за кількістю
+    bool CompareByCount(const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
+        return a.second > b.second;  // Сортуємо за значенням (кількістю) від найбільшого до найменшого
+    }
+
+    void MyForm::BoardHeader(std::vector<std::pair<std::string, int>> sortIdeas)
+    {
+        if (sortIdeas.size() < 3) {
+            textBox1->Text = "Top " + sortIdeas.size() + " ideas: " + Environment::NewLine;
+            textBox1->Text += "*not enough ideas for top 3*" + Environment::NewLine + Environment::NewLine;
+        }
+        else {
+            textBox1->Text = "Top 3 ideas: " + Environment::NewLine + Environment::NewLine;
+        }
+    }
+
+    void MyForm::FindTopThreeIdeas()
+    {
+        //Search and show top 3 most popular ideas 
+
+        // Reading all board ideas
+        std::vector<std::string> ideas;
+        std::string content(board);
+        std::istringstream iss(content);
+        std::string idea;
+
+        while (std::getline(iss, idea)) {
+            ideas.push_back(idea);
+        }
+
+        // Counting repetitions of ideas 
+        std::map<std::string, int> ideaCount;
+        for (const auto& i : ideas) {
+            ideaCount[i]++;
+        }
+
+        // Перетворити map в вектор пар для сортування
+        std::vector<std::pair<std::string, int>> sortedIdeas(ideaCount.begin(), ideaCount.end());
+
+        // Сортуємо за допомогою звичайної функції порівняння
+        std::sort(sortedIdeas.begin(), sortedIdeas.end(), CompareByCount);
+
+        BoardHeader(sortedIdeas);
+        // Вивести три найпопулярніші ідеї
+        std::ostringstream oss;
+        for (int i = 0; i < 3 && i < sortedIdeas.size(); ++i) {
+            textBox1->Text += "Rank " + (i + 1) + ": " + gcnew System::String(sortedIdeas[i].first.c_str()) + Environment::NewLine;
+            oss << "Rank " << i + 1 << ": " << sortedIdeas[i].first << "\n";
+        }
+
+    }
+
 }
