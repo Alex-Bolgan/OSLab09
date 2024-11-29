@@ -104,9 +104,9 @@ namespace OSLab09 {
         for (int i = 0; i < processNumber; i++) {
             DWORD exitCode;
             if (GetExitCodeProcess(process_handles_arr[i], &exitCode)) {
-                // Display the exit code in some form (e.g., MessageBox, log, etc.)
+                /*// Display the exit code in some form (e.g., MessageBox, log, etc.)
                 System::String^ message = "Child process " + i + " exited with code: " + exitCode;
-                MessageBox::Show(message);
+                MessageBox::Show(message);*/
             }
             else {
                 // Handle error in retrieving exit code
