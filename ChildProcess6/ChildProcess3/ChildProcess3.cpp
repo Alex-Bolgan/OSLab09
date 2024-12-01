@@ -32,7 +32,7 @@ std::vector<std::string> readIdeasFromFile(const std::string& fileName) {
     return ideas;
 }
 
-//Simulates choosing the best idea randomly from a set of ideas.
+/*//Simulates choosing the best idea randomly from a set of ideas.
 int bestChosenIdea(int numberOfProcesses) {
     // Create a random device
     std::random_device rd;
@@ -44,7 +44,7 @@ int bestChosenIdea(int numberOfProcesses) {
     std::cout << "Random Number: " << random_number << std::endl;
 
     return random_number;
-}
+}*/
 
 std::vector<std::string> selectRandomIdeas(const std::vector<std::string>& ideas, size_t count) {
     std::vector<std::string> selectedIdeas;
@@ -81,16 +81,24 @@ void waitForSignal() {
 
     DWORD waitResult = WaitForSingleObject(hEvent, INFINITE);
     if (waitResult == WAIT_OBJECT_0) {
-        std::cout << "Signal received! Processing event..." << std::endl;
-
-        // Виконуємо необхідну обробку після отримання сигналу
-        // Наприклад, зчитуємо дані з пам'яті:
-        
+        std::cout << "Signal received! Processing event..." << std::endl;        
     }
     else {
         std::cerr << "Wait failed: " << GetLastError() << std::endl;
     }
     CloseHandle(hEvent);
+}
+
+void outputIdeasWithNumbers(const std::string& ideas) {
+    std::istringstream stream(ideas);
+    std::string idea;
+    int lineNumber = 1;
+
+    while (std::getline(stream, idea)) {
+        if (!idea.empty()) { // Skip empty lines
+            std::cout << lineNumber++ << ". " << idea << std::endl;
+        }
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -157,13 +165,19 @@ int main(int argc, char* argv[]) {
 
     std::cout << ideasToWrite;
 
-
-    UnmapViewOfFile(board);
     CloseHandle(hMapFile);
 
     waitForSignal();
-    std::cin.get();
 
-    int numberOfProcesses = std::stoi(argv[1]);
-    return bestChosenIdea(numberOfProcesses);
+    std::string content(board);
+
+    outputIdeasWithNumbers(content);
+
+    UnmapViewOfFile(board);
+
+    int vote;
+    std::cin>>vote;
+    return vote;
+    //int numberOfProcesses = std::stoi(argv[1]);
+    //return bestChosenIdea(numberOfProcesses);
 }
