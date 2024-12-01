@@ -6,10 +6,13 @@
 #include <string>
 #include <random>
 #include <algorithm>
+#include <condition_variable>
 #define NUMBER_OF_IDEAS 1
 
 const size_t FILE_SIZE = 1024 * 1024;
 char* board;
+std::condition_variable cv;
+bool eventTriggered = false;
 
 //returns vector of ideas, read from file. Takes file path as parameter
 std::vector<std::string> readIdeasFromFile(const std::string& fileName) {
@@ -66,6 +69,30 @@ std::vector<std::string> selectRandomIdeas(const std::vector<std::string>& ideas
     return selectedIdeas;
 }
 
+void waitForSignal() {
+    HANDLE hEvent = OpenEvent(SYNCHRONIZE, FALSE, L"ParentToChildEvent");
+
+    if (hEvent == NULL) {
+        std::cerr << "Failed to open event: " << GetLastError() << std::endl;
+        return;
+    }
+
+    std::cout << "Child process waiting for signal..." << std::endl;
+
+    DWORD waitResult = WaitForSingleObject(hEvent, INFINITE);
+    if (waitResult == WAIT_OBJECT_0) {
+        std::cout << "Signal received! Processing event..." << std::endl;
+
+        // Виконуємо необхідну обробку після отримання сигналу
+        // Наприклад, зчитуємо дані з пам'яті:
+        
+    }
+    else {
+        std::cerr << "Wait failed: " << GetLastError() << std::endl;
+    }
+    CloseHandle(hEvent);
+}
+
 int main(int argc, char* argv[]) {
   
     if (argc < 1) {
@@ -106,6 +133,8 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> randomIdeas = selectRandomIdeas(ideas, NUMBER_OF_IDEAS);
 
     std::ostringstream oss;
+    DWORD processID = GetCurrentProcessId();
+    oss << "(" << processID << ")";
     for (const auto& idea : randomIdeas) {
         oss << idea << "\n";
     }
@@ -126,11 +155,15 @@ int main(int argc, char* argv[]) {
     memcpy(board + currentSize, ideasToWrite.c_str(), ideasToWrite.size() + 1);
     ReleaseMutex(hMutex);
 
-    //std::cin.get();
+    std::cout << ideasToWrite;
+
+
     UnmapViewOfFile(board);
     CloseHandle(hMapFile);
 
+    waitForSignal();
+    std::cin.get();
+
     int numberOfProcesses = std::stoi(argv[1]);
     return bestChosenIdea(numberOfProcesses);
-
 }
