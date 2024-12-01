@@ -223,6 +223,8 @@ private:
 	
 	HANDLE launchChildProcess();
 	
+	void SignalChildProcesses();
+
 	System::Void LaunchProcessesButton_Click(System::Object^ sender, System::EventArgs^ e);
 
 	void CountdownTimer_Tick(Object^ sender, EventArgs^ e);

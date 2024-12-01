@@ -70,6 +70,26 @@ namespace OSLab09 {
         return pi.hProcess;
     }
 
+    void MyForm::SignalChildProcesses() {
+       
+        HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, L"ParentToChildEvent");
+
+        if (hEvent == NULL) {
+            MessageBox::Show("Failed to create event: " + GetLastError());
+            return;
+        }
+
+        Sleep(5000); 
+        if (!SetEvent(hEvent)) {
+            MessageBox::Show("Failed to signal event: " + GetLastError());
+        }
+        else {
+            MessageBox::Show("Signal sent to child processes!");
+        }
+
+        CloseHandle(hEvent); 
+    }
+
     System::Void MyForm::LaunchProcessesButton_Click(System::Object^ sender, System::EventArgs^ e) {
 
         processNumber = Convert::ToInt32(processNumberTextBox->Text);
@@ -89,6 +109,8 @@ namespace OSLab09 {
         remainingTime = 30;
         timeLabel->Text = FormatTime(remainingTime);
         countdownTimer->Start();
+
+        SignalChildProcesses();
 
         WaitForChildProcesses();
         
