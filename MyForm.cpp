@@ -18,6 +18,7 @@ extern std::array<HANDLE, 8> process_handles_arr;
 extern HANDLE hMapFile;
 char* board;
 HANDLE hResultFile;
+std::vector<int> votes;
 
 namespace OSLab09 {
 
@@ -120,6 +121,8 @@ namespace OSLab09 {
 
         WaitForMultipleObjects(processNumber, process_handles_arr.data(), TRUE, INFINITE);
 
+        votes.clear();
+
         // Retrieve and display the exit code for each process
         for (int i = 0; i < processNumber; i++) {
             DWORD exitCode;
@@ -127,6 +130,8 @@ namespace OSLab09 {
                 /*// Display the exit code in some form (e.g., MessageBox, log, etc.)
                 System::String^ message = "Child process " + i + " exited with code: " + exitCode;
                 MessageBox::Show(message);*/
+
+                votes.push_back(static_cast<int>(exitCode));
             }
             else {
                 // Handle error in retrieving exit code
@@ -177,12 +182,37 @@ namespace OSLab09 {
 
     void MyForm::BoardHeader(std::vector<std::pair<std::string, int>> sortIdeas)
     {
-        if (sortIdeas.size() < 3) {
-            textBox1->Text = "Top " + sortIdeas.size() + " ideas: " + Environment::NewLine;
-            textBox1->Text += "*not enough ideas for top 3*" + Environment::NewLine + Environment::NewLine;
+
+        if (sortIdeas[0].second == 0) {
+            textBox1->Text = "*Child processes have not voted on existing ideas*" + Environment::NewLine;
+            WriteToFile("*Child processes have not voted on existing ideas*");
+            return;
         }
-        else {
-            textBox1->Text = "Top 3 ideas: " + Environment::NewLine + Environment::NewLine;
+
+        if (sortIdeas.size() < 3) {
+
+            for (int i = (sortIdeas.size() - 1); i >= 0; --i) {
+                if (sortIdeas[i].second != 0) {
+                    textBox1->Text = "Top " + (i+1) + " ideas: " + Environment::NewLine;
+                    textBox1->Text += "*not enough ideas and votes for top 3*" + Environment::NewLine + Environment::NewLine;
+                    break;
+                }
+            }
+        }
+        else if (sortIdeas.size() >= 3) {
+
+            if (sortIdeas[2].second == 0) {
+                for (int i = (sortIdeas.size() - 1); i >= 0; --i) {
+                    if (sortIdeas[i].second != 0) {
+                        textBox1->Text = "Top " + (i + 1) + " ideas: " + Environment::NewLine;
+                        textBox1->Text += "*not enough ideas and votes for top 3*" + Environment::NewLine + Environment::NewLine;
+                        break;
+                    }
+                }
+            }
+            else {
+                textBox1->Text = "Top 3 ideas: " + Environment::NewLine + Environment::NewLine;
+            }
         }
     }
 
@@ -207,6 +237,26 @@ namespace OSLab09 {
         CloseHandle(hFile);
     }
 
+    int MyForm::ShowLessThanThreeIdeas(std::vector<std::pair<std::string, int>>& sortedVotes, std::ostringstream& oss, int& lastPlace, int size)
+    {
+        for (int i = size; i >= 0; --i) {
+            if (sortedVotes[i].second != 0) {
+                lastPlace = i;
+                break;
+            }
+        }
+        if (lastPlace == -1) {
+            return -1;
+        }
+        else {
+            for (int i = 0; i <= lastPlace; ++i) {
+                textBox1->Text += "Rank " + (i + 1) + ": " + gcnew System::String(sortedVotes[i].first.c_str()) + Environment::NewLine;
+                oss << "Rank " << i + 1 << ": " << sortedVotes[i].first << "\n";
+            }
+        }
+        return 0;
+    }
+
     void MyForm::FindTopThreeIdeas()
     {
         //Search and show top 3 most popular ideas 
@@ -221,23 +271,44 @@ namespace OSLab09 {
             ideas.push_back(idea);
         }
 
-        // Counting repetitions of ideas 
-        std::map<std::string, int> ideaCount;
-        for (const auto& i : ideas) {
-            ideaCount[i]++;
+        // Create a vector of pairs (idea, votes), initializing votes to 0
+        std::vector<std::pair<std::string, int>> sortedVotes;
+        for (const auto& idea : ideas) {
+            sortedVotes.emplace_back(idea, 0);
         }
 
-        // Convert map into a vector of pairs for sorting
-        std::vector<std::pair<std::string, int>> sortedIdeas(ideaCount.begin(), ideaCount.end());
+        // Count votes for each idea by incrementing the vote count in the vector
+        for (const auto& vote : votes) {
+            if (vote >= 1 && vote <= static_cast<int>(sortedVotes.size())) {
+                sortedVotes[vote - 1].second++; // Increment vote count for the corresponding idea
+            }
+            else {
+                // Handle invalid votes (optional)
+                // std::cerr << "Invalid vote received: " << vote << std::endl;
+            }
+        }
 
-        std::sort(sortedIdeas.begin(), sortedIdeas.end(), CompareByCount);
+        std::sort(sortedVotes.begin(), sortedVotes.end(), CompareByCount);
 
-        BoardHeader(sortedIdeas);
+        BoardHeader(sortedVotes);
 
         std::ostringstream oss;
-        for (int i = 0; i < 3 && i < sortedIdeas.size(); ++i) {
-            textBox1->Text += "Rank " + (i + 1) + ": " + gcnew System::String(sortedIdeas[i].first.c_str()) + Environment::NewLine;
-            oss << "Rank " << i + 1 << ": " << sortedIdeas[i].first << "\n";
+        int lastPlace = -1; 
+
+
+        if (sortedVotes.size() < 3) {
+            ShowLessThanThreeIdeas(sortedVotes, oss, lastPlace, sortedVotes.size() - 1);
+        }
+        else {
+            if (sortedVotes[2].second ==0) {
+                ShowLessThanThreeIdeas(sortedVotes, oss, lastPlace, 1);
+            }
+            else {
+                for (int i = 0; i < 3; ++i) {
+                    textBox1->Text += "Rank " + (i + 1) + ": " + gcnew System::String(sortedVotes[i].first.c_str()) + Environment::NewLine;
+                    oss << "Rank " << i + 1 << ": " << sortedVotes[i].first << "\n";
+                }
+            }
         }
 
         WriteToFile(oss.str());
