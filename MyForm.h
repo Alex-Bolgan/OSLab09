@@ -237,6 +237,7 @@ private:
 	void BoardHeader(std::vector<std::pair<std::string, int>> sortIdeas);
 
 	void WriteToFile(const std::string& data);
+	int ShowLessThanThreeIdeas(std::vector<std::pair<std::string, int>>& sortedVotes, std::ostringstream& oss,  int& lastPlace, int size);
 };
 }
 
