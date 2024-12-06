@@ -70,13 +70,20 @@ std::vector<std::string> selectRandomIdeas(const std::vector<std::string>& ideas
 }
 
 void waitForSignal() {
-    HANDLE hEvent = OpenEvent(SYNCHRONIZE, FALSE, L"ParentToChildEvent");
 
-    if (hEvent == NULL) {
-        std::cerr << "Failed to open event: " << GetLastError() << std::endl;
-        return;
+    HANDLE hEvent;
+
+    while(true){
+
+        hEvent = OpenEvent(SYNCHRONIZE, FALSE, L"ParentToChildEvent");
+
+        if (hEvent != NULL) {
+            break;
+        }
+
+        CloseHandle(hEvent);
     }
-
+    
     std::cout << "Child process waiting for signal..." << std::endl;
 
     DWORD waitResult = WaitForSingleObject(hEvent, INFINITE);

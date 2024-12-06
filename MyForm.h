@@ -85,6 +85,7 @@ namespace OSLab09 {
 	private: System::Windows::Forms::Label^ label3;
 	private: System::Windows::Forms::Timer^ countdownTimer;
 	private: System::Windows::Forms::Label^ timeLabel;
+	private: System::ComponentModel::BackgroundWorker^ backgroundWorker;
 
 
 
@@ -121,6 +122,7 @@ namespace OSLab09 {
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->countdownTimer = (gcnew System::Windows::Forms::Timer(this->components));
 			this->timeLabel = (gcnew System::Windows::Forms::Label());
+			this->backgroundWorker = (gcnew System::ComponentModel::BackgroundWorker());
 			this->SuspendLayout();
 			// 
 			// LaunchProcessesButton
@@ -189,6 +191,10 @@ namespace OSLab09 {
 			this->timeLabel->TabIndex = 7;
 			this->timeLabel->Text = L"0";
 			// 
+			// backgroundWorker
+			// 
+			this->backgroundWorker->DoWork += gcnew System::ComponentModel::DoWorkEventHandler(this, &MyForm::backgroundWorker_DoWork);
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
@@ -238,6 +244,7 @@ private:
 
 	void WriteToFile(const std::string& data);
 	int ShowLessThanThreeIdeas(std::vector<std::pair<std::string, int>>& sortedVotes, std::ostringstream& oss,  int& lastPlace, int size);
+private: System::Void backgroundWorker_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e);
 };
 }
 

@@ -80,7 +80,6 @@ namespace OSLab09 {
             return;
         }
 
-        Sleep(5000); 
         if (!SetEvent(hEvent)) {
             MessageBox::Show("Failed to signal event: " + GetLastError());
         }
@@ -110,40 +109,7 @@ namespace OSLab09 {
         remainingTime = 30;
         timeLabel->Text = FormatTime(remainingTime);
         countdownTimer->Start();
-
-        SignalChildProcesses();
-
-        WaitForChildProcesses();
-        
-        //Для перевірки пам'яті (можна викинути)
-        std::string content(board);  
-        MessageBox::Show(gcnew System::String(content.c_str())); 
-
-        WaitForMultipleObjects(processNumber, process_handles_arr.data(), TRUE, INFINITE);
-
-        votes.clear();
-
-        // Retrieve and display the exit code for each process
-        for (int i = 0; i < processNumber; i++) {
-            DWORD exitCode;
-            if (GetExitCodeProcess(process_handles_arr[i], &exitCode)) {
-                /*// Display the exit code in some form (e.g., MessageBox, log, etc.)
-                System::String^ message = "Child process " + i + " exited with code: " + exitCode;
-                MessageBox::Show(message);*/
-
-                votes.push_back(static_cast<int>(exitCode));
-            }
-            else {
-                // Handle error in retrieving exit code
-                System::String^ error = "Failed to get exit code for process " + i +
-                    ". Error: " + GetLastError();
-                MessageBox::Show(error);
-            }
-
-            // Close process handle
-            CloseHandle(process_handles_arr[i]);
-        }
-
+  
     }
 
     void MyForm::CountdownTimer_Tick(Object^ sender, EventArgs^ e) {
@@ -154,12 +120,42 @@ namespace OSLab09 {
         } else {
                 countdownTimer->Stop();
                 timeLabel->Text = "00:00";
+                
+                std::string content(board);  
+                textBox1->Text = gcnew System::String(content.c_str()); 
+                       
+                SignalChildProcesses();
+                Sleep(10000);
+
+                votes.clear();
+
+                WaitForChildProcesses();
+
+                // Retrieve and display the exit code for each process
+                for (int i = 0; i < processNumber; i++) {
+                    DWORD exitCode;
+                    if (GetExitCodeProcess(process_handles_arr[i], &exitCode)) {
+                        /*// Display the exit code in some form (e.g., MessageBox, log, etc.)
+                        System::String^ message = "Child process " + i + " exited with code: " + exitCode;
+                        MessageBox::Show(message);*/
+
+                        votes.push_back(static_cast<int>(exitCode));
+                    }
+                    else {
+                        // Handle error in retrieving exit code
+                        System::String^ error = "Failed to get exit code for process " + i +
+                            ". Error: " + GetLastError();
+                        MessageBox::Show(error);
+                    }
+
+                    // Close process handle
+                    CloseHandle(process_handles_arr[i]);
+                        //UnmapViewOfFile(board);
+                        //CloseHandle(hMapFile);
+                }
+
                 FindTopThreeIdeas();
-                MessageBox::Show("Time out!", "Timer");
-                        
-                UnmapViewOfFile(board);
-                CloseHandle(hMapFile);
-        }
+            }
     }
       
     String^ MyForm::FormatTime(int seconds) {
@@ -257,6 +253,11 @@ namespace OSLab09 {
         return 0;
     }
 
+    System::Void MyForm::backgroundWorker_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
+    {
+        return System::Void();
+    }
+
     void MyForm::FindTopThreeIdeas()
     {
         //Search and show top 3 most popular ideas 
@@ -314,4 +315,30 @@ namespace OSLab09 {
         WriteToFile(oss.str());
     }
 
+    void waitForSignal() {
+
+        HANDLE hEvent;
+
+        while(true){
+
+            hEvent = OpenEvent(SYNCHRONIZE, FALSE, L"VotingEvent");
+
+            if (hEvent != NULL) {
+                break;
+            }
+
+            CloseHandle(hEvent);
+        }
+    
+        std::cout << "Child process waiting for signal..." << std::endl;
+
+        DWORD waitResult = WaitForSingleObject(hEvent, INFINITE);
+        if (waitResult == WAIT_OBJECT_0) {
+            std::cout << "Signal received! Processing event..." << std::endl;        
+        }
+        else {
+            std::cerr << "Wait failed: " << GetLastError() << std::endl;
+        }
+        CloseHandle(hEvent);
+    }   
 }
