@@ -6,13 +6,10 @@
 #include <string>
 #include <random>
 #include <algorithm>
-#include <condition_variable>
 #define NUMBER_OF_IDEAS 1
 
 const size_t FILE_SIZE = 1024 * 1024;
 char* board;
-std::condition_variable cv;
-bool eventTriggered = false;
 
 //Returns vector of ideas, read from file. Takes file path as parameter
 std::vector<std::string> readIdeasFromFile(const std::string& fileName) {
