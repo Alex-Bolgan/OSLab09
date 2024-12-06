@@ -121,8 +121,21 @@ namespace OSLab09 {
                 countdownTimer->Stop();
                 timeLabel->Text = "00:00";
                 
-                std::string content(board);  
-                textBox1->Text = gcnew System::String(content.c_str()); 
+                std::string content(board);
+
+                // Замінюємо символи нового рядка '\n' на відповідний формат для Windows Forms
+                std::string formattedContent;
+                for (char c : content) {
+                    if (c == '\n') {
+                        formattedContent += "\r\n"; // Windows використовує CRLF (\r\n) для нового рядка
+                    }
+                    else {
+                        formattedContent += c;
+                    }
+                }
+
+                // Встановлюємо текст у textBox1
+                textBox1->Text = gcnew System::String(formattedContent.c_str());
                        
                 SignalChildProcesses();
                 //Sleep(10000);
@@ -298,11 +311,17 @@ namespace OSLab09 {
 
 
         if (sortedVotes.size() < 3) {
-            ShowLessThanThreeIdeas(sortedVotes, oss, lastPlace, sortedVotes.size() - 1);
+            int check = ShowLessThanThreeIdeas(sortedVotes, oss, lastPlace, sortedVotes.size() - 1);
+            if (check == -1) {
+                return;
+            }
         }
         else {
             if (sortedVotes[2].second ==0) {
-                ShowLessThanThreeIdeas(sortedVotes, oss, lastPlace, 1);
+                int check = ShowLessThanThreeIdeas(sortedVotes, oss, lastPlace, 1);
+                if (check == -1) {
+                    return;
+                }
             }
             else {
                 for (int i = 0; i < 3; ++i) {
