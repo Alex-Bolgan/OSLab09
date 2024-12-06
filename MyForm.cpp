@@ -123,18 +123,16 @@ namespace OSLab09 {
                 
                 std::string content(board);
 
-                // Замінюємо символи нового рядка '\n' на відповідний формат для Windows Forms
                 std::string formattedContent;
                 for (char c : content) {
                     if (c == '\n') {
-                        formattedContent += "\r\n"; // Windows використовує CRLF (\r\n) для нового рядка
+                        formattedContent += "\r\n"; // CRLF (\r\n) 
                     }
                     else {
                         formattedContent += c;
                     }
                 }
 
-                // Встановлюємо текст у textBox1
                 textBox1->Text = gcnew System::String(formattedContent.c_str());
                        
                 SignalChildProcesses();
@@ -168,6 +166,10 @@ namespace OSLab09 {
                 }
 
                 FindTopThreeIdeas();
+
+                // Unmap the view of the file and close the handle
+                UnmapViewOfFile(board);
+                CloseHandle(hMapFile);
             }
     }
       
