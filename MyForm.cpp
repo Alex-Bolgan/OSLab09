@@ -84,13 +84,15 @@ namespace OSLab09 {
             MessageBox::Show("Failed to signal event: " + GetLastError());
         }
         else {
-            MessageBox::Show("Signal sent to child processes!");
+            MessageBox::Show("Voting started!");
         }
 
         CloseHandle(hEvent); 
     }
 
     System::Void MyForm::LaunchProcessesButton_Click(System::Object^ sender, System::EventArgs^ e) {
+
+        textBox1->Clear();
 
         processNumber = Convert::ToInt32(processNumberTextBox->Text);
 
@@ -124,13 +126,22 @@ namespace OSLab09 {
                 std::string content(board);
 
                 std::string formattedContent;
+                int lineNumber = 1;
+                std::string currentLine;
+
                 for (char c : content) {
                     if (c == '\n') {
-                        formattedContent += "\r\n"; // CRLF (\r\n) 
+                        formattedContent += std::to_string(lineNumber++) + ".  " + currentLine + "\r\n"; // CRLF (\r\n) 
+                        currentLine.clear(); 
                     }
                     else {
-                        formattedContent += c;
+                        currentLine += c;
                     }
+                }
+
+                // Checking the last line
+                if (!currentLine.empty()) {
+                    formattedContent += std::to_string(lineNumber) + ": " + currentLine + "\r\n";
                 }
 
                 textBox1->Text = gcnew System::String(formattedContent.c_str());
