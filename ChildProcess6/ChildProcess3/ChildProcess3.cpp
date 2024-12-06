@@ -14,7 +14,7 @@ char* board;
 std::condition_variable cv;
 bool eventTriggered = false;
 
-//returns vector of ideas, read from file. Takes file path as parameter
+//Returns vector of ideas, read from file. Takes file path as parameter
 std::vector<std::string> readIdeasFromFile(const std::string& fileName) {
     std::vector<std::string> ideas;
     std::ifstream inFile(fileName);
@@ -32,20 +32,7 @@ std::vector<std::string> readIdeasFromFile(const std::string& fileName) {
     return ideas;
 }
 
-/*//Simulates choosing the best idea randomly from a set of ideas.
-int bestChosenIdea(int numberOfProcesses) {
-    // Create a random device
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(1, numberOfProcesses * NUMBER_OF_IDEAS); // Random integers between 1 and all ideas
-
-    // Generate and print a random integer
-    int random_number = dist(gen);
-    std::cout << "Random Number: " << random_number << std::endl;
-
-    return random_number;
-}*/
-
+//Selects random ideas from file and stores in a seperated vector of strings 
 std::vector<std::string> selectRandomIdeas(const std::vector<std::string>& ideas, size_t count) {
     std::vector<std::string> selectedIdeas;
     if (ideas.size() < count) {
@@ -69,6 +56,7 @@ std::vector<std::string> selectRandomIdeas(const std::vector<std::string>& ideas
     return selectedIdeas;
 }
 
+//Waits for signal from parent object before continuing operating
 void waitForSignal() {
 
     HANDLE hEvent;
@@ -83,7 +71,7 @@ void waitForSignal() {
 
         CloseHandle(hEvent);
     }
-    
+    //Notify user about waiting signal
     std::cout << "Child process waiting for signal..." << std::endl;
 
     DWORD waitResult = WaitForSingleObject(hEvent, INFINITE);
@@ -95,7 +83,7 @@ void waitForSignal() {
     }
     CloseHandle(hEvent);
 }
-
+//Output all chosen ideas to a console (should be used after signal from parent object)
 void outputIdeasWithNumbers(const std::string& ideas) {
     std::istringstream stream(ideas);
     std::string idea;
@@ -117,7 +105,7 @@ int main(int argc, char* argv[]) {
         return -1;
 
     }
-
+    //Read ideas
     std::string fileName = "Ideas.txt";
     std::vector<std::string> ideas = readIdeasFromFile(fileName);
 
@@ -129,7 +117,7 @@ int main(int argc, char* argv[]) {
         //return error code
         return -2;
     }
-
+    //Synchoronization
     HANDLE hMutex = OpenMutex(SYNCHRONIZE, FALSE, L"IdeasMutex");
     if (hMutex == NULL) {
         std::cerr << "Could not open mutex object: " << GetLastError() << std::endl;
@@ -145,6 +133,7 @@ int main(int argc, char* argv[]) {
         std::cin.get();
     }
 
+    //Select ideas
     std::vector<std::string> randomIdeas = selectRandomIdeas(ideas, NUMBER_OF_IDEAS);
 
     std::ostringstream oss;
@@ -158,7 +147,7 @@ int main(int argc, char* argv[]) {
     WaitForSingleObject(hMutex, INFINITE);
 
     size_t currentSize = strlen(board);
-
+    //Write idea to shared memory
     if (currentSize + ideasToWrite.size() + 1 > FILE_SIZE) {
         std::cerr << "Not enough space to write data." << std::endl;
         ReleaseMutex(hMutex);
@@ -173,7 +162,7 @@ int main(int argc, char* argv[]) {
     std::cout << ideasToWrite;
 
     CloseHandle(hMapFile);
-
+    //wait for signal from parent object
     waitForSignal();
 
     std::string content(board);
@@ -182,9 +171,8 @@ int main(int argc, char* argv[]) {
 
     UnmapViewOfFile(board);
 
+    //Let user choose best idea
     int vote;
     std::cin>>vote;
     return vote;
-    //int numberOfProcesses = std::stoi(argv[1]);
-    //return bestChosenIdea(numberOfProcesses);
 }
