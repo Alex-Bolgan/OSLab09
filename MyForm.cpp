@@ -125,7 +125,7 @@ namespace OSLab09 {
                 textBox1->Text = gcnew System::String(content.c_str()); 
                        
                 SignalChildProcesses();
-                Sleep(10000);
+                //Sleep(10000);
 
                 votes.clear();
 
