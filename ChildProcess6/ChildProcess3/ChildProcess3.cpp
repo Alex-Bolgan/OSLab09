@@ -69,11 +69,12 @@ void waitForSignal() {
         CloseHandle(hEvent);
     }
     //Notify user about waiting signal
-    std::cout << "Child process waiting for signal..." << std::endl;
+    //std::cout << "Child process waiting for signal..." << std::endl;
 
     DWORD waitResult = WaitForSingleObject(hEvent, INFINITE);
     if (waitResult == WAIT_OBJECT_0) {
-        std::cout << "Signal received! Processing event..." << std::endl;        
+        std::cout << "\nVoting has started.\nChoose one favorite idea and vote for it (by entering its number).\n\n";
+        //std::cout << "Signal received! Processing event..." << std::endl;        
     }
     else {
         std::cerr << "Wait failed: " << GetLastError() << std::endl;
